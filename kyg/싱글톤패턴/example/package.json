@@ -1,0 +1,14 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start:no-singleton": "ts-node no-singleton/index.ts",
+    "start:singleton": "ts-node singleton/index.ts"
+  },
+  "devDependencies": {
+    "ts-node": "^10.8.0",
+    "typescript": "^4.7.2"
+  }
+}
