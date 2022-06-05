@@ -221,7 +221,6 @@ public float getTemp() {
 * 따른 예
 
 ```java
-// RemoteControlTest: 커맨드 패턴에서의 클라이언트
 public float getTemp() {
     return station.getTemperature();
 }
