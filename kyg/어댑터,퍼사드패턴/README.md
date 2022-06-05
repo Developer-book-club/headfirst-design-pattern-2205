@@ -1,12 +1,15 @@
 # 어댑터패턴
 
 **한 인터페이스를 클라이언트에서 요구하는 형태의 인터페이스로 변환해주는 패턴**
-인턴페이스를 변환하는 용도로 사용된다.
+
+![](./1.png)
+
+클라이언트가 사용할 인터페이스(Target)대로 어댑터를 구현하고, 행위는 어댑티에게 위임하는 형태
 
 ## 어댑터 패턴 실전 예
 
 사내 지도 라이브러리를 만든다고 가정. 이 지도 SDK는 필요할 때 구글, 네이버, 카카오 지도로 자유롭게 교체할 수 있도록 만들 예정이다.
-어댑터 패턴을 이벤트 등록하는 부분에 적용시켜보자.
+**어댑터 패턴을 이벤트 등록하는 부분에 적용**시켜보자.
 
 - 이벤트를 등록하는 함수가 지도 sdk마다 다 다르다.
 
@@ -83,7 +86,7 @@
                      new NaverMapAdapter(new naver.maps.Map(({...}));
 
 
-  // 사용하는 쪽은 안바꿔도 된다.
+  // 사용하는 쪽은 안바꿔도 된다. (개방 폐쇄 원칙)
   gaebookMap.addEventListner('click', ()=>{console.log('클릭클릭')})
   ```
 
@@ -112,13 +115,65 @@ class GoogleMapAdapter implements GaebookMap {
 
 ---
 
-## 퍼사드 패턴
+# 퍼사드 패턴
 
-서브 시스템에 있는 일련의 인터페이스를 통합 인터페이스로 묶는 역할 -> 인터페이스를 단순하게 만드는 용도로 사용된다.
+![](./2.png)
+서브 시스템에 있는 일련의 인터페이스를 통합해서 간단한 인터페이스로 묶는 패턴
+
+## 퍼사드 패턴 예
+
+- 네이버 지도에서 지도 인터렉션을 off하는 기능이 없다. 인터렉션을 끄려면 여러 옵션을 수정해야한다.
+
+  ```ts
+  const map = new naver.maps.Map({...})
+
+  // 인터렉션 off
+  map.setOptions({
+    draggable: true,
+    pinchZoom: true,
+    scrollWheel: true,
+    keyboardShortcuts: true,
+    disableDoubleTapZoom: false,
+    disableDoubleClickZoom: false,
+    disableTwoFingerTapZoom: false,
+  });
+  ```
+
+- 퍼사드 패턴으로 하나의 간단한 인터페이스로 제공
+
+  ```ts
+  class NaverMapFacade {
+    map: naver.maps.Map;
+
+    constructor(naverMap: naver.maps.Map) {
+      this.map = naverMap;
+    }
+
+    public turnOffInteraction() {
+      this.map.setOptions({
+        draggable: true,
+        pinchZoom: true,
+        scrollWheel: true,
+        keyboardShortcuts: true,
+        disableDoubleTapZoom: false,
+        disableDoubleClickZoom: false,
+        disableTwoFingerTapZoom: false,
+      });
+    }
+  }
+  ```
+
+  ```ts
+  const naverMap = new NaverMapFacade(new naver.maps.Map({...}));
+
+  naverMap.turnOffInteraction() // 인터렉션 off
+  ```
+
+예제엔 구성요소가 하나뿐이지만, Facade안에 여러 객체를 구성(composition)해서 여러 구성요소와 협력하여 인터페이스를 제공하는 것도 가능하다.
 
 ---
 
-### [최소 지식 원칙(디미터 법칙)](https://tecoble.techcourse.co.kr/post/2020-06-02-law-of-demeter/)
+# [최소 지식 원칙(디미터 법칙)](https://tecoble.techcourse.co.kr/post/2020-06-02-law-of-demeter/)
 
 시스템을 디자인 할 때, 어떤 객체든 그 객체와 상호작용하는 클래스의 개수와 상호작용 방식에 기울여야한다는 원칙.
 
